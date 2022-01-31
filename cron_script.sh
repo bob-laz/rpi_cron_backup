@@ -22,20 +22,29 @@ on_error() {
 trap "on_error" ERR
 
 # Delete backups older than X days to free up space on RPI
-DELETED_BACKUPS=$(find '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases' -type f -mtime +$BACKUP_THRESHOLD -delete)
+DELETED_PLEX_BACKUPS=$(find '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases' -type f -mtime +$BACKUP_THRESHOLD -delete)
 
 # Sync backup directory on SD card with backup directory on external HD
-SYNC_BACKUPS=$(rsync -av --delete '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/' /mnt/media-big/plex-backups)
+SYNCHED_PLEX_BACKUPS=$(rsync -av --delete '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/' /mnt/media-big/plex-backups)
 
-MESSAGE="Deleted the following backup files:\
+MEDIA_BACKUPS=$(rsync -av --delete /mnt/media-big/ /mnt/media-backup)
+
+MESSAGE="Deleted the following Plex backup files:\
 \n\n\
-$DELETED_BACKUPS\
+$DELETED_PLEX_BACKUPS\
 \n\n\
 ===========================================\
 \n\n\
-Synched the following files to external HD:\
+Synched the following Plex backup files to external HD:\
 \n\n\
-$SYNC_BACKUPS"
+$SYNCHED_PLEX_BACKUPS\
+\n\n\
+===========================================\
+\n\n\
+Synched the following media files to backup:\
+\n\n\
+$MEDIA_BACKUPS
+"
 
 echo -e "$MESSAGE" | mail -s "cron completed successfully" $TO_EMAIL
 
