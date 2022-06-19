@@ -7,14 +7,14 @@
 
 
 set -e
-exec 2>~/error_log
+exec 2>/home/pi/error_log
 
 TO_EMAIL="blaskowski94@gmail.com"
 BACKUP_THRESHOLD=30
 
 on_error() {
   echo "CRON JOB FAILED"
-  ERROR_LOG=$(<~/error_log)
+  ERROR_LOG=$(</home/pi/error_log)
   echo "ERROR: $ERROR_LOG"
   echo "JOB FAILED: $ERROR_LOG" | mail -s "CRON FAILED" $TO_EMAIL
 }
